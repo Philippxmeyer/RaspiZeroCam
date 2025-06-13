@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, redirect, url_for, \
                   send_from_directory, Response
-from picamera2 import Picamera2
-import cv2, subprocess, threading, os
+import subprocess, threading, os
 
 app = Flask(__name__)
 BASE = '/home/pi/timelapse'
@@ -11,11 +10,7 @@ VID_DIR = os.path.join(BASE, 'videos')
 os.makedirs(IMG_DIR, exist_ok=True)
 os.makedirs(VID_DIR, exist_ok=True)
 
-# Picamera2 für Live-Preview starten
-picam2 = Picamera2()
-preview_config = picam2.create_preview_configuration(main={"size": (640, 360)})
-picam2.configure(preview_config)
-picam2.start()
+# Libcamera wird für die Vorschau erst bei Bedarf genutzt
 
 capturing = False
 capture_process = None
@@ -65,11 +60,11 @@ def index():
 def preview():
     def gen():
         while True:
-            frame = picam2.capture_array("main")
-            ret, buf = cv2.imencode('.jpg', frame)
-            if not ret: continue
+            frame = subprocess.check_output([
+                'libcamera-still','-n','--immediate','-o','-','--width','640','--height','360']
+            )
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + buf.tobytes() + b'\r\n')
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
     return Response(gen(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 

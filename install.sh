@@ -3,8 +3,7 @@ set -e
 
 # Install required packages
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y hostapd dnsmasq python3-flask python3-opencv libcamera-apps ffmpeg
-sudo pip3 install picamera2
+sudo apt install -y hostapd dnsmasq python3-flask libcamera-apps ffmpeg
 
 # Copy network configuration files
 sudo cp network-config/dhcpcd.conf /etc/dhcpcd.conf
