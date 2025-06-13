@@ -31,7 +31,7 @@ Repository klont und danach `install.sh` aufruft. Es reicht also, den
 folgenden Befehl auszuführen:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/USERNAME/RaspiZeroCam/main/install-oneclick.sh | bash
+curl -sL https://raw.githubusercontent.com/philippxmeyer/RaspiZeroCam/main/install-oneclick.sh | bash
 ```
 
 Nach Abschluss empfiehlt sich ein Neustart des Pi, damit Hotspot und Webdienst
