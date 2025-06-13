@@ -10,6 +10,9 @@ VID_DIR = os.path.join(BASE, 'videos')
 os.makedirs(IMG_DIR, exist_ok=True)
 os.makedirs(VID_DIR, exist_ok=True)
 
+# Wiedergabe-FPS für gerenderte Videos
+OUTPUT_FPS = 30
+
 # Einfaches Logging zur Fehlersuche
 logging.basicConfig(
     filename=os.path.join(BASE, 'timelapse.log'),
@@ -113,9 +116,12 @@ def cancel_action():
 def render_video(img_dir, fps, run_num):
     video_file = os.path.join(VID_DIR, f'{run_num}.mp4')
     subprocess.run([
-        'ffmpeg','-y','-r',str(fps),
-        '-pattern_type','glob','-i',os.path.join(img_dir,'*.jpg'),
-        '-vf','scale=1920:1080','-c:v','libx264','-pix_fmt','yuv420p',
+        'ffmpeg', '-y',
+        '-framerate', str(fps),
+        '-pattern_type', 'glob', '-i', os.path.join(img_dir, '*.jpg'),
+        '-vf', 'scale=1920:1080',
+        '-r', str(OUTPUT_FPS),
+        '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
         video_file
     ], check=True)
 
