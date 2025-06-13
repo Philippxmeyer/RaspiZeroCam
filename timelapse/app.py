@@ -25,10 +25,19 @@ def index():
     if request.method == 'POST' and not capturing:
         try:
             spf = float(request.form['seconds_per_frame'])
-            dur = float(request.form['duration'])
+            dur_str = request.form['duration']
+            parts = dur_str.split(':')
+            if len(parts) == 2:
+                h, m = parts
+                dur = int(h) * 3600 + int(m) * 60
+            elif len(parts) == 3:
+                h, m, s = parts
+                dur = int(h) * 3600 + int(m) * 60 + int(s)
+            else:
+                raise ValueError
             if spf <= 0 or dur <= 0:
                 raise ValueError
-        except ValueError:
+        except (ValueError, KeyError):
             return redirect(url_for('index'))
 
         iso = request.form['iso']
