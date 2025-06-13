@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, redirect, url_for, \
                   send_from_directory, Response
-import subprocess, threading, os
+import subprocess, threading, os, logging
 
 app = Flask(__name__)
 BASE = '/home/pi/timelapse'
@@ -9,6 +9,13 @@ IMG_DIR = os.path.join(BASE, 'images')
 VID_DIR = os.path.join(BASE, 'videos')
 os.makedirs(IMG_DIR, exist_ok=True)
 os.makedirs(VID_DIR, exist_ok=True)
+
+# Einfaches Logging zur Fehlersuche
+logging.basicConfig(
+    filename=os.path.join(BASE, 'timelapse.log'),
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s:%(message)s'
+)
 
 # Libcamera wird für die Vorschau erst bei Bedarf genutzt
 
@@ -124,7 +131,7 @@ def capture(seconds_per_frame, duration, iso, focus):
 
     shutter_args = [
         '--shutter', str(us_per),
-        '--exposure-mode', 'normal'
+        '--exposure', 'normal'
     ]
 
     iso_args = ['--gain', str(int(int(iso)/100))] if iso!='auto' else []
@@ -143,8 +150,15 @@ def capture(seconds_per_frame, duration, iso, focus):
     capture_info = {'dir': out, 'fps': 1/seconds_per_frame, 'run': run_num}
     abort_requested = False
     try:
-        capture_process = subprocess.Popen(cmd)
-        capture_process.wait()
+        logging.info("Starting capture: %s", ' '.join(cmd))
+        capture_process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE)
+        stdout, stderr = capture_process.communicate()
+        if stdout:
+            logging.info(stdout.decode(errors='ignore'))
+        if stderr:
+            logging.error(stderr.decode(errors='ignore'))
+        logging.info("Capture exited with code %s", capture_process.returncode)
     finally:
         capture_process = None
         capturing = False
