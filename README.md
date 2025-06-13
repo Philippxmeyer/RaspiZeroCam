@@ -29,3 +29,9 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
    sudo apt install hostapd dnsmasq python3-flask python3-opencv \
                     libcamera-apps ffmpeg
    pip3 install picamera2
+```
+
+2. **Konfigurationsdateien kopieren**
+   ```bash
+   ./install-network.sh
+   ```
