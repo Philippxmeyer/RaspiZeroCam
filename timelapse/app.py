@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for, \
                   send_from_directory, Response
 from picamera2 import Picamera2
-import cv2, subprocess, threading, datetime, os
+import cv2, subprocess, threading, os
 
 app = Flask(__name__)
 BASE = '/home/pi/timelapse'
@@ -21,6 +21,14 @@ capturing = False
 capture_process = None
 capture_info = {}
 abort_requested = False
+
+
+def next_run_number():
+    existing = [d for d in os.listdir(IMG_DIR)
+                if os.path.isdir(os.path.join(IMG_DIR, d))]
+    nums = [int(d) for d in existing if d.isdigit()]
+    next_num = max(nums) + 1 if nums else 1
+    return f"{next_num:04d}"
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -89,7 +97,7 @@ def cancel_action():
     action = request.form.get('action')
     if action == 'render' and capture_info.get('dir'):
         try:
-            render_video(capture_info['dir'], capture_info['fps'], capture_info['ts'])
+            render_video(capture_info['dir'], capture_info['fps'], capture_info['run'])
         except subprocess.CalledProcessError:
             pass
     elif action == 'discard' and capture_info.get('dir'):
@@ -98,8 +106,8 @@ def cancel_action():
                 os.remove(os.path.join(capture_info['dir'], f))
     return redirect(url_for('index'))
 
-def render_video(img_dir, fps, ts):
-    video_file = os.path.join(VID_DIR, f'tl_{ts}.mp4')
+def render_video(img_dir, fps, run_num):
+    video_file = os.path.join(VID_DIR, f'{run_num}.mp4')
     subprocess.run([
         'ffmpeg','-y','-r',str(fps),
         '-pattern_type','glob','-i',os.path.join(img_dir,'*.jpg'),
@@ -112,8 +120,8 @@ def capture(seconds_per_frame, duration, iso, focus):
     if seconds_per_frame <= 0 or duration <= 0:
         capturing = False
         return
-    ts = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-    out = os.path.join(IMG_DIR, f'tl_{ts}')
+    run_num = next_run_number()
+    out = os.path.join(IMG_DIR, run_num)
     os.makedirs(out, exist_ok=True)
 
     ms_per = int(seconds_per_frame * 1000)
@@ -137,13 +145,13 @@ def capture(seconds_per_frame, duration, iso, focus):
         '-o', os.path.join(out, 'img_%04d.jpg')
     ] + shutter_args + iso_args + focus_args
 
-    capture_info = {'dir': out, 'fps': 1/seconds_per_frame, 'ts': ts}
+    capture_info = {'dir': out, 'fps': 1/seconds_per_frame, 'run': run_num}
     abort_requested = False
     capture_process = subprocess.Popen(cmd)
     capture_process.wait()
     capture_process = None
     if not abort_requested:
-        render_video(capture_info['dir'], capture_info['fps'], capture_info['ts'])
+        render_video(capture_info['dir'], capture_info['fps'], capture_info['run'])
     capturing = False
 
 if __name__ == '__main__':
