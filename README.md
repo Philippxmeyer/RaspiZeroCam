@@ -23,9 +23,9 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
 
 ## Installation
 
-F\u00fcr die Schnellinstallation gibt es ein Skript, das zun\u00e4chst dieses
+Für die Schnellinstallation gibt es ein Skript, das zunächst dieses
 Repository klont und danach `install.sh` aufruft. Es reicht also, den
-folgenden Befehl auszuf\u00fchren:
+folgenden Befehl auszuführen:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/USERNAME/RaspiZeroCam/main/install-oneclick.sh | bash
