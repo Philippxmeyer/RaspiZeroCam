@@ -142,12 +142,14 @@ def capture(seconds_per_frame, duration, iso, focus):
 
     capture_info = {'dir': out, 'fps': 1/seconds_per_frame, 'run': run_num}
     abort_requested = False
-    capture_process = subprocess.Popen(cmd)
-    capture_process.wait()
-    capture_process = None
+    try:
+        capture_process = subprocess.Popen(cmd)
+        capture_process.wait()
+    finally:
+        capture_process = None
+        capturing = False
     if not abort_requested:
         render_video(capture_info['dir'], capture_info['fps'], capture_info['run'])
-    capturing = False
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
