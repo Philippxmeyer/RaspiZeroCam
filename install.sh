@@ -2,7 +2,6 @@
 set -e
 
 # Install required packages
-sudo apt update && sudo apt upgrade -y
 sudo apt install -y hostapd dnsmasq python3-flask libcamera-apps ffmpeg authbind
 
 # Copy network configuration files
