@@ -13,7 +13,8 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
   - Download fertiger Videos
   - Aufnahme kann vorzeitig abgebrochen werden
 - **libcamera-still** für Bilder
- - **FFmpeg** für FHD-Videos (30 FPS)
+- **FFmpeg** für FHD-Videos (30 FPS)
+- Beschleunigte Videoerstellung über Hardware-Encoding (falls verfügbar)
 - **systemd**-Service für Autostart
 - Fortlaufend nummerierte Ordner und Videos
 

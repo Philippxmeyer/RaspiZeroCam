@@ -13,6 +13,9 @@ os.makedirs(VID_DIR, exist_ok=True)
 # Wiedergabe-FPS für gerenderte Videos
 OUTPUT_FPS = 30
 
+# Hardware encoder used for faster rendering if available
+HARDWARE_ENCODER = 'h264_v4l2m2m'
+
 # Einfaches Logging zur Fehlersuche
 logging.basicConfig(
     filename=os.path.join(BASE, 'timelapse.log'),
@@ -115,15 +118,28 @@ def cancel_action():
 
 def render_video(img_dir, fps, run_num):
     video_file = os.path.join(VID_DIR, f'{run_num}.mp4')
-    subprocess.run([
+    cmd = [
         'ffmpeg', '-y',
         '-framerate', str(fps),
         '-pattern_type', 'glob', '-i', os.path.join(img_dir, '*.jpg'),
         '-vf', 'scale=1920:1080',
         '-r', str(OUTPUT_FPS),
-        '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
+        '-c:v', HARDWARE_ENCODER, '-pix_fmt', 'yuv420p',
         video_file
-    ], check=True)
+    ]
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError:
+        logging.warning("Hardware encoding failed, falling back to libx264")
+        subprocess.run([
+            'ffmpeg', '-y',
+            '-framerate', str(fps),
+            '-pattern_type', 'glob', '-i', os.path.join(img_dir, '*.jpg'),
+            '-vf', 'scale=1920:1080',
+            '-r', str(OUTPUT_FPS),
+            '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
+            video_file
+        ], check=True)
 
 def capture(seconds_per_frame, duration, iso, focus):
     global capturing, capture_process, capture_info, abort_requested
