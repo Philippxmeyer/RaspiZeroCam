@@ -50,8 +50,8 @@
         <option value="infinity">Unendlich</option>
       </select>
     </label>
-    <button type="submit" {% raw %}{% if capturing %}disabled{% endif %}{% endraw %}>
-      {% raw %}{% if capturing %}Aufnahme läuft…{% else %}Aufnahme starten{% endif %}{% endraw %}
+    <button type="submit" {% if capturing %}disabled{% endif %}>
+      {% if capturing %}Aufnahme läuft…{% else %}Aufnahme starten{% endif %}
     </button>
   </form>
 
@@ -63,11 +63,11 @@
 
   <h2>Fertige Videos</h2>
   <ul>
-    {% raw %}{% for v in videos %}{% endraw %}
+    {% for v in videos %}
       <li><a href="{{ url_for('download', filename=v) }}">{{ v }}</a></li>
-    {% raw %}{% else %}{% endraw %}
+    {% else %}
       <li><em>Keine Videos vorhanden.</em></li>
-    {% raw %}{% endfor %}{% endraw %}
+    {% endfor %}
   </ul>
 </body>
 </html>
