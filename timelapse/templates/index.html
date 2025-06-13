@@ -30,10 +30,10 @@
 
   <form method="post">
     <label>Sekunden/Frame:
-      <input type="number" name="seconds_per_frame" step="0.1" required>
+      <input type="number" name="seconds_per_frame" step="0.1" min="0.1" required>
     </label>
     <label>Dauer (s):
-      <input type="number" name="duration" step="1" required>
+      <input type="number" name="duration" step="1" min="1" required>
     </label>
     <label>ISO:
       <select name="iso">
