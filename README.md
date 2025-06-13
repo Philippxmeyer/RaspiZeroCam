@@ -35,7 +35,9 @@ curl -sL https://raw.githubusercontent.com/philippxmeyer/RaspiZeroCam/main/insta
 ```
 
 Nach Abschluss empfiehlt sich ein Neustart des Pi, damit Hotspot und Webdienst
-laufen.
+laufen. Das Skript installiert dabei `authbind`, richtet die nötigen
+Berechtigungen ein und erlaubt so dem Flask-Server, weiterhin als Benutzer
+`pi` auf Port 80 zu lauschen.
 
 Wer das Repository bereits geklont hat, kann die Installation auch direkt
 per

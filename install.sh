@@ -3,12 +3,22 @@ set -e
 
 # Install required packages
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y hostapd dnsmasq python3-flask libcamera-apps ffmpeg
+sudo apt install -y hostapd dnsmasq python3-flask libcamera-apps ffmpeg authbind
 
 # Copy network configuration files
 sudo cp network-config/dhcpcd.conf /etc/dhcpcd.conf
 sudo cp network-config/hostapd.conf /etc/hostapd/hostapd.conf
 sudo cp network-config/dnsmasq.conf /etc/dnsmasq.conf
+
+# Enable hotspot services
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+sudo systemctl enable dnsmasq
+
+# Allow user 'pi' to bind to port 80 using authbind
+sudo touch /etc/authbind/byport/80
+sudo chown pi /etc/authbind/byport/80
+sudo chmod 500 /etc/authbind/byport/80
 
 # Copy application files
 sudo mkdir -p /home/pi/timelapse
