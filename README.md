@@ -15,12 +15,14 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
 - **libcamera-still** für Bilder
 - **FFmpeg** für FHD-Videos
 - **systemd**-Service für Autostart
+- Fortlaufend nummerierte Ordner und Videos
 
 ## Voraussetzungen
 
 - Raspberry Pi Zero 2 W mit Camera Module 3
 - Raspbian (aktuell)
 - Internetzugang einmalig zur Installation
+- Keine integrierte RTC – ohne Internet zeigt die Uhrzeit standardmäßig falsch an
 
 ## Installation
 
@@ -59,3 +61,4 @@ per
 6. Nach Abschluss erscheint das erzeugte Video unter *Fertige Videos* und
    kann direkt heruntergeladen werden. Die Datei wird auch auf dem Pi unter
    `/home/pi/timelapse/videos` gespeichert.
+   Bilder und Videos erhalten fortlaufende Nummern (0001, 0002, ...).
