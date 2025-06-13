@@ -23,15 +23,20 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
 
 ## Installation
 
-1. **System updaten & Pakete installieren**
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   sudo apt install hostapd dnsmasq python3-flask python3-opencv \
-                    libcamera-apps ffmpeg
-   pip3 install picamera2
+F\u00fcr die Schnellinstallation gibt es ein Skript, das zun\u00e4chst dieses
+Repository klont und danach `install.sh` aufruft. Es reicht also, den
+folgenden Befehl auszuf\u00fchren:
+
+```bash
+curl -sL https://raw.githubusercontent.com/USERNAME/RaspiZeroCam/main/install-oneclick.sh | bash
 ```
 
-2. **Konfigurationsdateien kopieren**
-   ```bash
-   ./install-network.sh
-   ```
+Nach Abschluss empfiehlt sich ein Neustart des Pi, damit Hotspot und Webdienst
+laufen.
+
+Wer das Repository bereits geklont hat, kann die Installation auch direkt 
+per
+
+```bash
+./install.sh
+```
