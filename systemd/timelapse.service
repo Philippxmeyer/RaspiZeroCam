@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=pi
 WorkingDirectory=/home/pi/timelapse
-ExecStart=/usr/bin/python3 /home/pi/timelapse/app.py
+ExecStart=/usr/bin/authbind --deep /usr/bin/python3 /home/pi/timelapse/app.py
 Restart=always
 
 [Install]
