@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO_URL="https://github.com/USERNAME/RaspiZeroCam.git"
+REPO_URL="https://github.com/philippxmeyer/RaspiZeroCam.git"
 TARGET_DIR="$HOME/RaspiZeroCam"
 
 if [ ! -d "$TARGET_DIR" ]; then
