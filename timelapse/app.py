@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, redirect, url_for, \
                   send_from_directory, Response
-import subprocess, threading, os, logging
+import subprocess, threading, os, logging, time
 
 app = Flask(__name__)
 BASE = '/home/pi/timelapse'
@@ -67,8 +67,10 @@ def index():
 def preview():
     def gen():
         while True:
+            if capturing:
+                break
             frame = subprocess.check_output([
-                'libcamera-still','-n','--immediate','-o','-','--width','640','--height','360']
+                'libcamera-still', '-n', '--immediate', '-o', '-', '--width', '640', '--height', '360']
             )
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -122,6 +124,8 @@ def capture(seconds_per_frame, duration, iso, focus):
     if seconds_per_frame <= 0 or duration <= 0:
         capturing = False
         return
+    # give the preview generator time to exit and free the camera
+    time.sleep(1)
     run_num = next_run_number()
     out = os.path.join(IMG_DIR, run_num)
     os.makedirs(out, exist_ok=True)
