@@ -13,7 +13,7 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
   - Download fertiger Videos
   - Aufnahme kann vorzeitig abgebrochen werden
 - **libcamera-still** für Bilder
-- **FFmpeg** für FHD-Videos
+ - **FFmpeg** für FHD-Videos (30 FPS)
 - **systemd**-Service für Autostart
 - Fortlaufend nummerierte Ordner und Videos
 
@@ -54,7 +54,8 @@ per
    beitreten.
 3. Im Browser `http://192.168.4.1` aufrufen. Die Weboberfläche zeigt eine
    Live-Vorschau der Kamera und Eingabefelder für das Timelapse-Intervall,
-   die Gesamtdauer sowie ISO und Fokus.
+   die Gesamtdauer sowie ISO und Fokus. Die Dauer wird im Format
+   `hh:mm:ss` angegeben.
 4. Gewünschte Werte eintragen und auf **Aufnahme starten** klicken. Während
    der Aufnahme ist die Schaltfläche deaktiviert.
 5. Läuft eine Aufnahme, kann sie über **Aufnahme abbrechen** vorzeitig beendet
