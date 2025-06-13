@@ -78,18 +78,19 @@ def capture(seconds_per_frame, duration, iso, focus):
         '-o', os.path.join(out, 'img_%04d.jpg')
     ] + shutter_args + iso_args + focus_args
 
-    subprocess.run(cmd, check=True)
+    try:
+        subprocess.run(cmd, check=True)
 
-    fps = 1/seconds_per_frame
-    video_file = os.path.join(VID_DIR, f'tl_{ts}.mp4')
-    subprocess.run([
-        'ffmpeg','-y','-r',str(fps),
-        '-pattern_type','glob','-i',os.path.join(out,'*.jpg'),
-        '-vf','scale=1920:1080','-c:v','libx264','-pix_fmt','yuv420p',
-        video_file
-    ], check=True)
-
-    capturing = False
+        fps = 1/seconds_per_frame
+        video_file = os.path.join(VID_DIR, f'tl_{ts}.mp4')
+        subprocess.run([
+            'ffmpeg','-y','-r',str(fps),
+            '-pattern_type','glob','-i',os.path.join(out,'*.jpg'),
+            '-vf','scale=1920:1080','-c:v','libx264','-pix_fmt','yuv420p',
+            video_file
+        ], check=True)
+    finally:
+        capturing = False
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
