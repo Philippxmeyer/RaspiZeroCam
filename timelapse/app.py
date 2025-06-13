@@ -23,8 +23,14 @@ capturing = False
 def index():
     global capturing
     if request.method == 'POST' and not capturing:
-        spf = float(request.form['seconds_per_frame'])
-        dur = float(request.form['duration'])
+        try:
+            spf = float(request.form['seconds_per_frame'])
+            dur = float(request.form['duration'])
+            if spf <= 0 or dur <= 0:
+                raise ValueError
+        except ValueError:
+            return redirect(url_for('index'))
+
         iso = request.form['iso']
         focus = request.form['focus']
         threading.Thread(
@@ -53,6 +59,9 @@ def download(filename):
 
 def capture(seconds_per_frame, duration, iso, focus):
     global capturing
+    if seconds_per_frame <= 0 or duration <= 0:
+        capturing = False
+        return
     ts = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     out = os.path.join(IMG_DIR, f'tl_{ts}')
     os.makedirs(out, exist_ok=True)
