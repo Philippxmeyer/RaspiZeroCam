@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Timelapse-Controller</title>
+  <style>
+    body { font-family:sans-serif; background:#1a1a1a; color:#eee; margin:0;padding:1rem; }
+    h1,h2{ color:#f0a500; }
+    form{ background:#2a2a2a; padding:1rem; border-radius:8px;
+          box-shadow:0 2px 5px rgba(0,0,0,0.5); margin-bottom:1.5rem; }
+    label{ display:block; margin:.5rem 0; }
+    input,select,button{ padding:.4rem .6rem; border:none; border-radius:4px; margin-left:.5rem; }
+    button{ background:#f0a500; color:#1a1a1a; cursor:pointer; font-weight:bold; }
+    button:disabled{ background:#555; cursor:not-allowed; }
+    .preview{text-align:center; margin-bottom:1rem;}
+    .preview img{ border:2px solid #444; border-radius:4px; max-width:100%; height:auto; }
+    ul{ list-style:none; padding:0; } li+li{ margin-top:.3rem; }
+    a{ color:#f0a500; text-decoration:none; } a:hover{text-decoration:underline;}
+  </style>
+</head>
+<body>
+  <h1>Timelapse-Konfiguration</h1>
+
+  {% if not capturing %}
+  <div class="preview">
+    <h2>🔭 Live-Vorschau</h2>
+    <img src="{{ url_for('preview') }}" alt="Live Preview">
+  </div>
+  {% endif %}
+
+  <form method="post">
+    <label>Sekunden/Frame:
+      <input type="number" name="seconds_per_frame" step="0.1" required>
+    </label>
+    <label>Dauer (s):
+      <input type="number" name="duration" step="1" required>
+    </label>
+    <label>ISO:
+      <select name="iso">
+        <option value="auto">Auto</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="400">400</option>
+        <option value="800">800</option>
+      </select>
+    </label>
+    <label>Fokus:
+      <select name="focus">
+        <option value="auto">Auto</option>
+        <option value="infinity">Unendlich</option>
+      </select>
+    </label>
+    <button type="submit" {% raw %}{% if capturing %}disabled{% endif %}{% endraw %}>
+      {% raw %}{% if capturing %}Aufnahme läuft…{% else %}Aufnahme starten{% endif %}{% endraw %}
+    </button>
+  </form>
+
+  <h2>Fertige Videos</h2>
+  <ul>
+    {% raw %}{% for v in videos %}{% endraw %}
+      <li><a href="{{ url_for('download', filename=v) }}">{{ v }}</a></li>
+    {% raw %}{% else %}{% endraw %}
+      <li><em>Keine Videos vorhanden.</em></li>
+    {% raw %}{% endfor %}{% endraw %}
+  </ul>
+</body>
+</html>
