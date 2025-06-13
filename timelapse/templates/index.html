@@ -55,6 +55,12 @@
     </button>
   </form>
 
+  {% if capturing %}
+  <form action="{{ url_for('cancel') }}" method="post" style="margin-top:1rem;">
+    <button type="submit">Aufnahme abbrechen</button>
+  </form>
+  {% endif %}
+
   <h2>Fertige Videos</h2>
   <ul>
     {% raw %}{% for v in videos %}{% endraw %}
