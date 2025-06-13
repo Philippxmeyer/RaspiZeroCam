@@ -18,6 +18,9 @@ picam2.configure(preview_config)
 picam2.start()
 
 capturing = False
+capture_process = None
+capture_info = {}
+abort_requested = False
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -66,8 +69,46 @@ def preview():
 def download(filename):
     return send_from_directory(VID_DIR, filename, as_attachment=True)
 
+@app.route('/cancel', methods=['POST'])
+def cancel():
+    global capturing, abort_requested, capture_process, capture_info
+    if capturing and capture_process:
+        abort_requested = True
+        capture_process.terminate()
+        capturing = False
+        img_dir = capture_info.get('dir')
+        img_count = 0
+        if img_dir and os.path.exists(img_dir):
+            img_count = len([f for f in os.listdir(img_dir) if f.endswith('.jpg')])
+        if img_count > 0:
+            return render_template('cancel.html', images=img_count)
+    return redirect(url_for('index'))
+
+@app.route('/cancel_action', methods=['POST'])
+def cancel_action():
+    action = request.form.get('action')
+    if action == 'render' and capture_info.get('dir'):
+        try:
+            render_video(capture_info['dir'], capture_info['fps'], capture_info['ts'])
+        except subprocess.CalledProcessError:
+            pass
+    elif action == 'discard' and capture_info.get('dir'):
+        for f in os.listdir(capture_info['dir']):
+            if f.endswith('.jpg'):
+                os.remove(os.path.join(capture_info['dir'], f))
+    return redirect(url_for('index'))
+
+def render_video(img_dir, fps, ts):
+    video_file = os.path.join(VID_DIR, f'tl_{ts}.mp4')
+    subprocess.run([
+        'ffmpeg','-y','-r',str(fps),
+        '-pattern_type','glob','-i',os.path.join(img_dir,'*.jpg'),
+        '-vf','scale=1920:1080','-c:v','libx264','-pix_fmt','yuv420p',
+        video_file
+    ], check=True)
+
 def capture(seconds_per_frame, duration, iso, focus):
-    global capturing
+    global capturing, capture_process, capture_info, abort_requested
     if seconds_per_frame <= 0 or duration <= 0:
         capturing = False
         return
@@ -96,19 +137,14 @@ def capture(seconds_per_frame, duration, iso, focus):
         '-o', os.path.join(out, 'img_%04d.jpg')
     ] + shutter_args + iso_args + focus_args
 
-    try:
-        subprocess.run(cmd, check=True)
-
-        fps = 1/seconds_per_frame
-        video_file = os.path.join(VID_DIR, f'tl_{ts}.mp4')
-        subprocess.run([
-            'ffmpeg','-y','-r',str(fps),
-            '-pattern_type','glob','-i',os.path.join(out,'*.jpg'),
-            '-vf','scale=1920:1080','-c:v','libx264','-pix_fmt','yuv420p',
-            video_file
-        ], check=True)
-    finally:
-        capturing = False
+    capture_info = {'dir': out, 'fps': 1/seconds_per_frame, 'ts': ts}
+    abort_requested = False
+    capture_process = subprocess.Popen(cmd)
+    capture_process.wait()
+    capture_process = None
+    if not abort_requested:
+        render_video(capture_info['dir'], capture_info['fps'], capture_info['ts'])
+    capturing = False
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
