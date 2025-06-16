@@ -156,7 +156,6 @@ def capture(seconds_per_frame, duration, iso, focus):
     us_per = ms_per * 1000
 
     shutter_args = [
-        '--shutter', str(us_per),
         '--exposure', 'normal'
     ]
 
