@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, redirect, url_for, \
                   send_from_directory, Response
-import subprocess, threading, os, logging, time
+import subprocess, threading, os, logging, time, datetime
 
 app = Flask(__name__)
 BASE = '/home/pi/timelapse'
@@ -38,6 +38,18 @@ def next_run_number():
     next_num = max(nums) + 1 if nums else 1
     return f"{next_num:04d}"
 
+
+def get_current_time():
+    """Return current system time as formatted string."""
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+def set_system_time(dt: datetime.datetime):
+    """Set system and RTC time using `date` and `hwclock`."""
+    dt_str = dt.strftime('%Y-%m-%d %H:%M:%S')
+    subprocess.run(['sudo', 'date', '-s', dt_str], check=True)
+    subprocess.run(['sudo', 'hwclock', '-w'], check=True)
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global capturing
@@ -67,7 +79,25 @@ def index():
         capturing = True
         return redirect(url_for('index'))
     videos = sorted(f for f in os.listdir(VID_DIR) if f.endswith('.mp4'))
-    return render_template('index.html', videos=videos, capturing=capturing)
+    return render_template('index.html', videos=videos,
+                           capturing=capturing,
+                           current_time=get_current_time())
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    message = None
+    if request.method == 'POST':
+        new_time = request.form.get('new_time')
+        try:
+            dt = datetime.datetime.strptime(new_time, '%Y-%m-%dT%H:%M')
+            set_system_time(dt)
+            message = 'Zeit aktualisiert.'
+        except Exception:
+            message = 'Ung\xc3\xbcltiges Format.'
+    return render_template('settings.html',
+                           current_time=get_current_time(),
+                           message=message)
 
 @app.route('/preview')
 def preview():

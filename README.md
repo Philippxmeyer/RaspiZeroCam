@@ -12,6 +12,8 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
   - Live-Vorschau (MJPEG)
   - Download fertiger Videos
   - Aufnahme kann vorzeitig abgebrochen werden
+  - Aktuelle Uhrzeit wird angezeigt
+  - Zeiteinstellung über DS3231 RTC
 - **libcamera-still** für Bilder
 - **FFmpeg** für FHD-Videos (30 FPS)
 - Beschleunigte Videoerstellung über Hardware-Encoding (falls verfügbar)
@@ -23,7 +25,7 @@ Dieses Repo richtet deinen Raspberry Pi Zero 2 W als WLAN-Hotspot ein, startet b
 - Raspberry Pi Zero 2 W mit Camera Module 3
 - Raspbian (aktuell)
 - Internetzugang einmalig zur Installation
-- Keine integrierte RTC – ohne Internet zeigt die Uhrzeit standardmäßig falsch an
+- DS3231 RTC-Unterstützung mit manueller Zeiteinstellung im Webinterface
 
 ## Installation
 
