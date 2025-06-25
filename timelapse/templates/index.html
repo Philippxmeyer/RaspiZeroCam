@@ -20,6 +20,8 @@
 </head>
 <body>
   <h1>Timelapse-Konfiguration</h1>
+  <p>Aktuelle Zeit: {{ current_time }}</p>
+  <p><a href="{{ url_for('settings') }}">Einstellungen</a></p>
 
   {% if not capturing %}
   <div class="preview">
